@@ -1,5 +1,7 @@
 from __future__ import print_function, division
+
 import WalabotAPI as wlbt
+
 try:  # for Python 2
     import Tkinter as tk
 except ImportError:  # for Python 3
@@ -92,10 +94,15 @@ class RawImageApp(tk.Frame):
         self.canvasPanel.update(rawImage, self.lenOfPhi, self.lenOfR)
         self.ctrlPanel.fpsVar.set(self.wlbt.getFps())
         self.cyclesId = self.after_idle(self.loop)
+        print("dpnkr" + "lenghofPhi" + str(self.lenOfPhi))
+        print("dpnkr" + "lenofR" + str(self.lenOfR))
+        print("dpnkr" + "rawImage" + str(rawImage))
+        f = open('log.txt', 'w')
+        f.write('answer:' + str(rawImage))
+        f.close()
 
 
 class WalabotPanel(tk.LabelFrame):
-
     class WalabotParameter(tk.Frame):
         """ The frame that sets each Walabot parameter line.
         """
@@ -123,11 +130,11 @@ class WalabotPanel(tk.LabelFrame):
             try:
                 num = float(num)
                 if num < self.minVal or num > self.maxVal:
-                    self.entry.config(fg='#'+COLORS[235])
+                    self.entry.config(fg='#' + COLORS[235])
                     return
                 self.entry.config(fg='gray1')
             except ValueError:
-                self.entry.config(fg='#'+COLORS[235])
+                self.entry.config(fg='#' + COLORS[235])
                 return
 
         def get(self):
@@ -203,6 +210,7 @@ class WalabotPanel(tk.LabelFrame):
         tParams = (self.tMin.get(), self.tMax.get(), self.tRes.get())
         pParams = (self.pMin.get(), self.pMax.get(), self.pRes.get())
         thldParam, mtiParam = self.thld.get(), self.mti.get()
+        # print("paream losg" + rParams.__str__())
         return rParams, tParams, pParams, thldParam, mtiParam
 
     def setParams(self, rParams, thetaParams, phiParams, threshold):
@@ -216,6 +224,7 @@ class WalabotPanel(tk.LabelFrame):
         self.pMax.set(phiParams[1])
         self.pRes.set(phiParams[2])
         self.thld.set(threshold)
+        print("dpnkr params" + str(rParams[0]))
 
     def changeEntriesState(self, state):
         for param in self.parameters:
@@ -276,6 +285,7 @@ class ControlPanel(tk.LabelFrame):
             self.master.wlbtPanel.changeEntriesState('normal')
             self.master.canvasPanel.reset()
             self.statusVar.set('STATUS_IDLE')
+            # print("deepankar")
 
 
 class CanvasPanel(tk.LabelFrame):
@@ -289,7 +299,7 @@ class CanvasPanel(tk.LabelFrame):
         self.canvas = tk.Canvas(
             self, width=CANVAS_LENGTH, height=CANVAS_LENGTH)
         self.canvas.pack()
-        self.canvas.configure(background='#'+COLORS[0])
+        self.canvas.configure(background='#' + COLORS[0])
 
     def setGrid(self, sizeX, sizeY):
         """ Set the canvas components (rectangles), given the size of the axes.
@@ -297,11 +307,11 @@ class CanvasPanel(tk.LabelFrame):
                 sizeX       Number of cells in Phi axis.
                 sizeY       Number of cells in R axis.
         """
-        recHeight, recWidth = CANVAS_LENGTH/sizeX, CANVAS_LENGTH/sizeY
+        recHeight, recWidth = CANVAS_LENGTH / sizeX, CANVAS_LENGTH / sizeY
         self.cells = [[
             self.canvas.create_rectangle(
-                recWidth*col, recHeight*row,
-                recWidth*(col+1), recHeight*(row+1),
+                recWidth * col, recHeight * row,
+                recWidth * (col + 1), recHeight * (row + 1),
                 width=0)
             for col in range(sizeY)] for row in range(sizeX)]
 
@@ -316,8 +326,8 @@ class CanvasPanel(tk.LabelFrame):
         for i in range(lenOfPhi):
             for j in range(lenOfR):
                 self.canvas.itemconfigure(
-                    self.cells[lenOfPhi-i-1][j],
-                    fill='#'+COLORS[rawImage[i][j]])
+                    self.cells[lenOfPhi - i - 1][j],
+                    fill='#' + COLORS[rawImage[i][j]])
 
     def reset(self):
         """ Deletes all the canvas components (colored rectangles).
